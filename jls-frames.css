@@ -1,0 +1,103 @@
+/* ============================================================
+   JLS interactive frames — shared styles
+   Matches the John L. Scott × Unframe deck design system.
+   ============================================================ */
+:root {
+  --bg: #f8fafc; --surface: #ffffff; --surface-subtle: #f1f5f9;
+  --ink-1: #0f172a; --ink-2: #1e293b;
+  --text1: #1d293d; --text2: #45556c; --text3: #62748e; --text4: #90a1b9;
+  --brand: #7849ff; --brand-hover: #7008e7; --brand-soft: #ece4ff;
+  --border: #e2e8f0; --border-strong: #cad5e2;
+  --red: #f22a42; --green: #00b16a; --orange: #fe9a00;
+  --ach: #7849ff; --prod: #00b16a; --aff: #fe9a00;
+  --shadow-lg: 0 20px 40px -16px rgba(15,23,42,.12), 0 4px 12px -2px rgba(15,23,42,.06);
+  --font: 'Inter', system-ui, sans-serif;
+}
+
+.jls-frame {
+  width: 100%; height: 100%;
+  box-sizing: border-box;
+  background: var(--bg);
+  color: var(--text1);
+  font-family: var(--font);
+  font-feature-settings: 'ss01','cv11';
+  -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+.jls-frame * { box-sizing: border-box; }
+.jls-frame .tnum { font-variant-numeric: tabular-nums; }
+
+/* eyebrow */
+.jls-eyebrow {
+  display: inline-flex; align-items: center; gap: 11px; white-space: nowrap;
+  font: 700 11px/1 var(--font); letter-spacing: .15em; text-transform: uppercase;
+  color: var(--brand);
+}
+.jls-eyebrow-rule { width: 30px; height: 1px; background: var(--brand); opacity: .5; }
+
+/* ---- controls (sliders) ---- */
+.jls-ctl { display: flex; flex-direction: column; gap: 12px; }
+.jls-ctl-head { display: flex; align-items: baseline; justify-content: space-between; }
+.jls-ctl-label { font: 600 12px/1 var(--font); letter-spacing: .04em; text-transform: uppercase; color: var(--text3); }
+.jls-ctl-label em { font-style: normal; color: var(--text4); text-transform: none; letter-spacing: 0; font-weight: 500; }
+.jls-ctl-val { font: 800 22px/1 var(--font); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+
+.jls-slider-wrap { position: relative; padding-bottom: 26px; }
+.jls-slider-track {
+  position: absolute; left: 0; right: 0; top: 9px; height: 6px;
+  background: var(--border); border-radius: 99px; pointer-events: none;
+}
+.jls-slider-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; }
+.jls-slider-wrap input[type=range] {
+  position: relative; z-index: 2; width: 100%; height: 24px; margin: 0;
+  -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer;
+}
+.jls-slider-wrap input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--accent, var(--brand));
+  box-shadow: 0 4px 12px -2px rgba(15,23,42,.28); cursor: grab; margin-top: 0;
+}
+.jls-slider-wrap input[type=range]::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.08); }
+.jls-slider-wrap input[type=range]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%; background: #fff;
+  border: 3px solid var(--accent, var(--brand)); box-shadow: 0 4px 12px -2px rgba(15,23,42,.28); cursor: grab;
+}
+.jls-ticks { position: absolute; left: 0; right: 0; top: 24px; height: 22px; }
+.jls-tick {
+  position: absolute; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; padding: 0; cursor: pointer;
+}
+.jls-tick-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-strong); transition: background .2s, transform .2s; }
+.jls-tick-lbl { font: 600 9px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; color: var(--text4); white-space: nowrap; transition: color .2s; }
+.jls-tick.on .jls-tick-dot { background: var(--accent, var(--brand)); transform: scale(1.4); }
+.jls-tick.on .jls-tick-lbl { color: var(--accent, var(--brand)); }
+
+/* segmented control */
+.jls-seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--surface-subtle); padding: 5px; border-radius: 12px; }
+.jls-seg-btn {
+  font: 700 16px/1 var(--font); font-variant-numeric: tabular-nums;
+  padding: 12px 0; border: none; border-radius: 8px; cursor: pointer;
+  background: transparent; color: var(--text3); transition: all .18s;
+}
+.jls-seg-btn:hover { color: var(--text1); }
+.jls-seg-btn.on { background: #fff; color: var(--accent, var(--brand)); box-shadow: 0 2px 8px -2px rgba(15,23,42,.18); }
+
+/* small metric chips */
+.jls-metric { display: flex; flex-direction: column; gap: 4px; }
+.jls-metric-v { font: 800 var(--mv, 30px)/.95 var(--font); letter-spacing: -.03em; color: var(--text1); font-variant-numeric: tabular-nums; }
+.jls-metric-l { font: 600 10.5px/1.3 var(--font); letter-spacing: .05em; text-transform: uppercase; color: var(--text4); }
+
+/* segment legend dot */
+.jls-dot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+
+/* hint pill */
+.jls-hint {
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  font: 600 9.5px/1 var(--font); letter-spacing: .1em; text-transform: uppercase; color: var(--text4);
+}
+.jls-hint .hd { width: 5px; height: 5px; border-radius: 50%; background: var(--brand); animation: jlsPulse 2s infinite; }
+@keyframes jlsPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(120,73,255,.5); } 50% { box-shadow: 0 0 0 5px rgba(120,73,255,0); } }

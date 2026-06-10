@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JLS Business Case — Interactive Frame (A · Headline Engine)</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="jls-frames.css">
+<link rel="stylesheet" href="jls-idea-a.css">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body { background: #f8fafc; font-family: 'Inter', system-ui, sans-serif; }
+  /* container fills the viewport, is fixed + clipped, and is NEVER sized by
+     its content — so measuring it can't oscillate with the stage. */
+  #scaler { position: fixed; inset: 0; overflow: hidden; }
+  /* fixed-size stage, absolutely centered and scaled to fit (same technique
+     as the design-canvas artboard, which is stable under live interaction). */
+  #stage {
+    position: absolute; top: 50%; left: 50%;
+    width: 1280px; height: 800px; flex: none;
+    transform-origin: center center;
+    will-change: transform;
+  }
+  #stage > div { width: 1280px; height: 800px; }
+</style>
+</head>
+<body>
+<div id="scaler"><div id="stage"><div id="root"></div></div></div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#f8fafc"/>
+    <text x="50" y="46" font-family="Inter, sans-serif" font-size="20" font-weight="800" fill="#1d293d" text-anchor="middle">$2.8M</text>
+    <rect x="24" y="58" width="52" height="6" rx="3" fill="#7849ff"/>
+    <rect x="24" y="68" width="34" height="5" rx="2.5" fill="#00b16a"/>
+    <circle cx="62" cy="70.5" r="6" fill="#fff" stroke="#7849ff" stroke-width="2.5"/>
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="jls-model.js?v=5"></script>
+<script type="text/babel" src="jls-shared.jsx?v=5"></script>
+<script type="text/babel" src="jls-idea-a.jsx?v=5"></script>
+
+<script type="text/babel" data-presets="react">
+(function () {
+  ReactDOM.createRoot(document.getElementById('root')).render(<window.IdeaA />);
+
+  // Scale the fixed 1280×800 stage to fit its container. We measure #scaler —
+  // a position:fixed, overflow:hidden box that fills the viewport and is never
+  // sized by its content — so this can NEVER feed back into a resize loop
+  // (the cause of the old "twitch / infinite offset" bug).
+  const scaler = document.getElementById('scaler');
+  const stage = document.getElementById('stage');
+  let lastS = null, scheduled = false;
+  function fit() {
+    const w = scaler.clientWidth, h = scaler.clientHeight;
+    const s = Math.min(w / 1280, h / 800);
+    if (!s || !isFinite(s)) return;            // skip 0-dimension first paint
+    if (lastS !== null && Math.abs(s - lastS) < 0.0005) return; // unchanged — no DOM write
+    lastS = s;
+    stage.style.transform = 'translate(-50%, -50%) scale(' + s + ')';
+  }
+  function scheduleFit() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => { scheduled = false; fit(); });
+  }
+  window.addEventListener('resize', scheduleFit);
+  window.addEventListener('load', scheduleFit);
+  // observe the CONTAINER (viewport-sized), not the document or the content
+  if (window.ResizeObserver) new ResizeObserver(scheduleFit).observe(scaler);
+  requestAnimationFrame(() => { fit(); requestAnimationFrame(fit); });
+  fit();
+
+  // when embedded inside the deck, forward wheel scrolling to the host so the
+  // page keeps scrolling over the frame (sliders use pointer/click, unaffected).
+  if (window.parent && window.parent !== window) {
+    window.addEventListener('wheel', (e) => {
+      try { window.parent.scrollBy({ top: e.deltaY, left: e.deltaX }); } catch (_) {}
+    }, { passive: true });
+  }
+})();
+</script>
+</body>
+</html>
